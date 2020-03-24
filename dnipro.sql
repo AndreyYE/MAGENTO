@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1
--- Время создания: Мар 19 2020 г., 22:00
+-- Время создания: Мар 24 2020 г., 10:17
 -- Версия сервера: 10.4.10-MariaDB
 -- Версия PHP: 7.3.12
 
@@ -25,58 +25,102 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `contacts`
+-- Структура таблицы `permissions`
 --
 
-CREATE TABLE `contacts` (
+CREATE TABLE `permissions` (
   `id` int(6) UNSIGNED NOT NULL,
-  `phone` varchar(150) COLLATE utf8_unicode_ci NOT NULL,
   `name` varchar(150) COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Дамп данных таблицы `contacts`
+-- Дамп данных таблицы `permissions`
 --
 
-INSERT INTO `contacts` (`id`, `phone`, `name`) VALUES
-(1, '1234', 'aaa'),
-(2, '123456', 'sss'),
-(3, '12345', 'qqq'),
-(4, '12345678', 'www'),
-(5, '1214214', 'eee'),
-(6, '12412323', 'rrrr'),
-(7, '124124124', 'ttt'),
-(8, '34534534', 'yyyy'),
-(9, '341234124', 'uuu'),
-(10, '45645645', 'iii'),
-(11, '45634643', 'ooo'),
-(12, '3434234', 'ppp'),
-(13, '523535', 'aaa'),
-(14, '45235235', 'sss'),
-(15, '52352353', 'fff'),
-(16, '234234432', 'ddd');
+INSERT INTO `permissions` (`id`, `name`) VALUES
+(1, 'distribute'),
+(3, 'done'),
+(2, 'upload'),
+(4, 'view');
 
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `contact_user`
+-- Структура таблицы `roles`
 --
 
-CREATE TABLE `contact_user` (
-  `user_id` int(6) UNSIGNED NOT NULL,
-  `contact_id` int(6) UNSIGNED NOT NULL
+CREATE TABLE `roles` (
+  `id` int(6) UNSIGNED NOT NULL,
+  `name` varchar(150) COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Дамп данных таблицы `contact_user`
+-- Дамп данных таблицы `roles`
 --
 
-INSERT INTO `contact_user` (`user_id`, `contact_id`) VALUES
-(19, 1),
-(19, 2),
-(20, 1),
-(20, 2),
-(21, 1);
+INSERT INTO `roles` (`id`, `name`) VALUES
+(3, 'Children'),
+(2, 'Father'),
+(1, 'Mother');
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `role_permission`
+--
+
+CREATE TABLE `role_permission` (
+  `role_id` int(6) UNSIGNED NOT NULL,
+  `permission_id` int(6) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Дамп данных таблицы `role_permission`
+--
+
+INSERT INTO `role_permission` (`role_id`, `permission_id`) VALUES
+(1, 2),
+(1, 3),
+(1, 4),
+(2, 1),
+(2, 3),
+(2, 4),
+(3, 3),
+(3, 4);
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `tasks`
+--
+
+CREATE TABLE `tasks` (
+  `id` int(6) UNSIGNED NOT NULL,
+  `mother_id` int(6) UNSIGNED NOT NULL,
+  `father_id` int(6) UNSIGNED DEFAULT NULL,
+  `child_id` int(6) UNSIGNED DEFAULT NULL,
+  `title` varchar(150) COLLATE utf8_unicode_ci NOT NULL,
+  `status` varchar(150) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `file` char(255) COLLATE utf8_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Дамп данных таблицы `tasks`
+--
+
+INSERT INTO `tasks` (`id`, `mother_id`, `father_id`, `child_id`, `title`, `status`, `file`) VALUES
+(1, 1, 2, 3, 'one task', 'done', 'upload/0ed34bbe95bd2a9af64358bb13b92407.docx'),
+(2, 1, 2, 4, 'task two', 'done', 'upload/0ed34bbe95bd2a9af64358bb13b92407.docx'),
+(3, 1, 2, 5, 'task three', NULL, 'upload/0ed34bbe95bd2a9af64358bb13b92407.docx'),
+(4, 1, 2, 3, 'task four', NULL, 'upload/0ed34bbe95bd2a9af64358bb13b92407.docx'),
+(5, 1, 2, 4, 'task \r\nfive', 'done', 'upload/0ed34bbe95bd2a9af64358bb13b92407.docx'),
+(6, 1, 2, 5, 'task \r\nsix', NULL, 'upload/0ed34bbe95bd2a9af64358bb13b92407.docx'),
+(7, 1, NULL, NULL, 'task \r\nseven', NULL, 'upload/0ed34bbe95bd2a9af64358bb13b92407.docx'),
+(8, 1, NULL, NULL, 'task\r\neight', NULL, 'upload/0ed34bbe95bd2a9af64358bb13b92407.docx'),
+(9, 1, NULL, NULL, 'task\r\nnine', NULL, 'upload/0ed34bbe95bd2a9af64358bb13b92407.docx'),
+(10, 1, NULL, NULL, 'task\r\nten', NULL, 'upload/0ed34bbe95bd2a9af64358bb13b92407.docx'),
+(11, 1, NULL, NULL, 'task eleven', NULL, 'upload/0ed34bbe95bd2a9af64358bb13b92407.docx'),
+(12, 1, NULL, NULL, ' task twelve', NULL, 'upload/bf67e1e199d14767aec776a298d35353.docx');
 
 -- --------------------------------------------------------
 
@@ -86,86 +130,117 @@ INSERT INTO `contact_user` (`user_id`, `contact_id`) VALUES
 
 CREATE TABLE `users` (
   `id` int(6) UNSIGNED NOT NULL,
-  `email` varchar(150) COLLATE utf8_unicode_ci NOT NULL,
   `password` varchar(150) COLLATE utf8_unicode_ci NOT NULL,
-  `login` varchar(150) COLLATE utf8_unicode_ci NOT NULL
+  `role_id` int(6) UNSIGNED DEFAULT NULL,
+  `name` varchar(150) COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
 -- Дамп данных таблицы `users`
 --
 
-INSERT INTO `users` (`id`, `email`, `password`, `login`) VALUES
-(3, 'test@gmail.com', '11111111', 'asds'),
-(4, 'test1@gmail.com', '$2y$10$4nSJwoWIizlEUwBsP96yN.MWNqQ0hs0Ruop8dl5gBgSjYwfDXaH2G', 'new'),
-(5, 'test2@gmail.com', '$2y$10$fnzxS3JkbZtImnFHe4Q1PePy4CQEyIncmHF//LXWRtWQY6ZFEM8EG', 'maclaren'),
-(6, 'test3@gmail.com', '$2y$10$t0nMh3syGSEjhQisDZZo9.bfUHVE/EKkK320C8IE4CtZAehyQ3f5O', 'maclaren1'),
-(7, 'test4@gmail.com', '$2y$10$cPbD70yBYEeBM/yj/tGc8uWq1bzf5NK25XmxaNOVoT1QT8T3hgilC', 'maclaren2'),
-(8, 'test5@gmail.com', '$2y$10$FlRFfNMB0lzq.rlL45ECueXmLIBeD2K/Drb0QoK1WFEt0/XjueXlC', 'maclaren3'),
-(9, 'test6@gmail.com', '$2y$10$fExA4Uuca9p09B7s9txRn.CZb2M4jTV/rdsN/24YzKFZDS2SlfIU2', 'maclaren5'),
-(10, 'test7@gmail.com', '$2y$10$sZmJ/22HktOAeniR/mCmB.Yj/.8VRtu23Zm/ILQYSJb7GxWTANfhq', 'maclaren6'),
-(11, 'test9@gmail.com', '$2y$10$jNGnpcpPDhwPAkbA6WRFxO3k/1VZAUKP82CkJqR50A98wQZaFTMWq', 'maclaren123'),
-(12, 'test10@gmail.com', '$2y$10$RY7HqZMSR3uFFskgJb5Zsu7uv9pvKf6vMbYG0cmwDVLLRMJpn3FKW', 'maclaren444'),
-(13, 'test12@gmail.com', '$2y$10$rUD9YdUDfGvkmQ3mqVBtUea0mKATJVW2bfUkz2F1cX0dm6VKf1xMa', 'maclaren123456'),
-(14, 'test12345@gmail.com', '$2y$10$8WZ1lQb3bmC2rGg6PcU0Q.kfHrXSzAPUsFFhMcHcl0I20TTPa.YZW', 'maclaren123456'),
-(15, 'tesst@gmail.com', '$2y$10$2gn5v0WFFibQqO8MvHelBOKWQ9EOctrP6l9hdUUvfR.m2bLnUR20y', 'maclaren'),
-(16, 'tessst@gmail.com', '$2y$10$P2HkjmhyknIcNeD3p.EP0.2gcO1MX2eDNEvwIZ5mMwAHgoMqhQ7X6', 'maclaren'),
-(17, 'tesssst@gmail.com', '$2y$10$sVlNFW.G9cFnAk9Y56rFmObGvWuoI7SF2W.n2b1/K0h/8CMErfcc.', 'maclaren'),
-(18, 'tesssdddst@gmail.com', '$2y$10$ItnNSIirub2pauJXhy7wquKE9jI96vr9MflMs1a/O6mkcImQfiJOG', 'maclaren'),
-(19, 'andreidan1986@gmail.com', '$2y$10$aZKmMJumkHFZm6/4oBqugOMNpqTJjVGB7B.RnwtTvzZjKcL84DGne', 'maclaren'),
-(20, 'aaa@gmail.com', '$2y$10$JHDq0ovW57TqulwkeQNVNu/UdQ.Sv6u2fWvO6VVrGUUhWO.Qc1dT.', 'aaa'),
-(21, 'sss@gmail.com', '$2y$10$T9TGFAhe91lkyNrrClfp8.6jgRxQa0Ez0SytHpy/OG4c3x/DEoX9e', 'sss');
+INSERT INTO `users` (`id`, `password`, `role_id`, `name`) VALUES
+(1, '$2y$10$QTD.A9gr6pYi4rwSgdEGU.DvIZEGMW7xlGAwamg.LM6bJya4iN8ny', 1, 'aaa'),
+(2, '$2y$10$gPRfhHN2CN6vsAkTDjWXK.vU/kYAQGDmFF8tt8hOWqF83IevBDiUe', 2, 'sss'),
+(3, '$2y$10$iEd9RNWu1FzepW4bwy/p6ebAcNTzGtUM/dmXISV.cJxNAfHvF9n4K', 3, 'ddd'),
+(4, '$2y$10$Sw4n4LH2Cv6q8AFKwEV4muI9KgYYCgY9nZYdm8nJE4p4ttfK4TKhq', 3, 'fff'),
+(5, '$2y$10$GvH8g8HL6nBD2.FBWMFCA.XZ.r9ulUYEuxst13xOI3O4VFKCKqaNu', 3, 'ggg'),
+(6, '$2y$10$29orhCqwC8lK494n8byam.83BtB73sQ22Ibqj4SQ/s5S8FY1L0E1W', 3, 'zzz');
 
 --
 -- Индексы сохранённых таблиц
 --
 
 --
--- Индексы таблицы `contacts`
+-- Индексы таблицы `permissions`
 --
-ALTER TABLE `contacts`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `permissions`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_name` (`name`);
 
 --
--- Индексы таблицы `contact_user`
+-- Индексы таблицы `roles`
 --
-ALTER TABLE `contact_user`
-  ADD PRIMARY KEY (`user_id`,`contact_id`),
-  ADD KEY `FK_contact` (`contact_id`);
+ALTER TABLE `roles`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_name` (`name`);
+
+--
+-- Индексы таблицы `role_permission`
+--
+ALTER TABLE `role_permission`
+  ADD PRIMARY KEY (`role_id`,`permission_id`),
+  ADD KEY `FK_permission` (`permission_id`);
+
+--
+-- Индексы таблицы `tasks`
+--
+ALTER TABLE `tasks`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `FK__mother` (`mother_id`),
+  ADD KEY `FK_father` (`father_id`),
+  ADD KEY `FK_child` (`child_id`);
 
 --
 -- Индексы таблицы `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `unique_email` (`email`);
+  ADD UNIQUE KEY `unique_name` (`name`),
+  ADD KEY `FK__role_id` (`role_id`);
 
 --
 -- AUTO_INCREMENT для сохранённых таблиц
 --
 
 --
--- AUTO_INCREMENT для таблицы `contacts`
+-- AUTO_INCREMENT для таблицы `permissions`
 --
-ALTER TABLE `contacts`
-  MODIFY `id` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+ALTER TABLE `permissions`
+  MODIFY `id` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT для таблицы `roles`
+--
+ALTER TABLE `roles`
+  MODIFY `id` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT для таблицы `tasks`
+--
+ALTER TABLE `tasks`
+  MODIFY `id` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT для таблицы `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Ограничения внешнего ключа сохраненных таблиц
 --
 
 --
--- Ограничения внешнего ключа таблицы `contact_user`
+-- Ограничения внешнего ключа таблицы `role_permission`
 --
-ALTER TABLE `contact_user`
-  ADD CONSTRAINT `FK__user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
-  ADD CONSTRAINT `FK_contact` FOREIGN KEY (`contact_id`) REFERENCES `contacts` (`id`);
+ALTER TABLE `role_permission`
+  ADD CONSTRAINT `FK__role` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `FK_permission` FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`id`) ON DELETE CASCADE;
+
+--
+-- Ограничения внешнего ключа таблицы `tasks`
+--
+ALTER TABLE `tasks`
+  ADD CONSTRAINT `FK__mother` FOREIGN KEY (`mother_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `FK_child` FOREIGN KEY (`child_id`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `FK_father` FOREIGN KEY (`father_id`) REFERENCES `users` (`id`);
+
+--
+-- Ограничения внешнего ключа таблицы `users`
+--
+ALTER TABLE `users`
+  ADD CONSTRAINT `FK__role_id` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
